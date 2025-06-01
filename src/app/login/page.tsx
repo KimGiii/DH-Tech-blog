@@ -11,7 +11,12 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Logging in with:", { email, password });
-    // TODO: Add API call or auth logic
+    // Mock role-based navigation logic
+    if (email === "admin@example.com") {
+      window.location.href = "/admin"; // 관리자 페이지
+    } else {
+      window.location.href = "/"; // 일반 사용자 메인 페이지
+    }
   };
 
   return (
@@ -50,6 +55,13 @@ export default function LoginPage() {
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             로그인
+          </button>
+          <button
+            type="button"
+            onClick={() => window.location.href = "/signup"}
+            className="w-full bg-gray-700 text-white py-2 rounded hover:bg-gray-800 mt-2"
+          >
+            회원가입
           </button>
         </form>
       </div>

@@ -34,3 +34,4 @@ test-results/
 # eslint / stylelint
 .eslintcache
 .stylelintcache
+/src/generated/prisma
