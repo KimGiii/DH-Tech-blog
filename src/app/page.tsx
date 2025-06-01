@@ -1,15 +1,29 @@
+"use client"
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function HomePage() {
+    const { data: session } = useSession();
+
     return (
         <>
             <div className="w-full flex justify-end px-4 pt-4">
-                <Link
-                    href="/login"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                >
-                    로그인
-                </Link>
+                {session?.user ? (
+                    <Link
+                        href="/me"
+                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                    >
+                        내 정보 보기
+                    </Link>
+                ) : (
+                    <Link
+                        href="/login"
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    >
+                        로그인
+                    </Link>
+                )}
             </div>
             <main className="max-w-4xl mx-auto px-4 py-8">
                 {/* 상단 네비게이션은 layout.tsx에 분리해두는 것을 권장 */}
