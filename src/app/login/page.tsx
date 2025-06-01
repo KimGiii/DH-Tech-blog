@@ -1,8 +1,7 @@
-
-
 "use client";
 
 import { useState } from "react";
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -58,10 +57,17 @@ export default function LoginPage() {
           </button>
           <button
             type="button"
-            onClick={() => window.location.href = "/signup"}
+            onClick={() => window.location.href = "/user/join"}
             className="w-full bg-gray-700 text-white py-2 rounded hover:bg-gray-800 mt-2"
           >
             회원가입
+          </button>
+          <button
+            type="button"
+            onClick={() => signIn("github")}
+            className="w-full bg-gray-700 text-white py-2 rounded hover:bg-gray-800 mt-2"
+          >
+            GitHub 로그인
           </button>
         </form>
       </div>
