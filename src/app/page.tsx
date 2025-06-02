@@ -1,9 +1,11 @@
 "use client"
 
 import Link from "next/link";
-import {signOut, useSession} from "next-auth/react";
-import {useRouter} from "next/navigation";
-import {useState} from "react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Image from "next/image";
+import homeIcon from "@/assets/home.png";
 
 export default function HomePage() {
     const { data: session } = useSession();
@@ -17,36 +19,44 @@ export default function HomePage() {
         }
     };
 
+    console.log("session", session);
     return (
         <>
-            <div className="w-full flex justify-end px-4 pt-4 gap-2">
-                {session ? (
+            <div className="container mx-auto">
+              <div className="w-full max-w-4xl mx-auto flex justify-between items-center px-4 pt-4 gap-2">
+                <div>
+                  <Link href="/">
+                    <Image src={homeIcon} alt="Home" width={32} height={32} className="hover:opacity-80 transition" />
+                  </Link>
+                </div>
+                <div className="flex gap-2">
+                  {session ? (
                     <>
-                        <Link
-                            href="/me"
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                        >
-                            내 정보 보기
-                        </Link>
-                        <button
-                            onClick={() => signOut()}
-                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
-                        >
-                            로그아웃
-                        </button>
+                      <Link
+                        href="/my"
+                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                      >
+                        내 정보 보기
+                      </Link>
+                      <button
+                        onClick={() => signOut()}
+                        className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
+                      >
+                        로그아웃
+                      </button>
                     </>
-                ) : (
+                  ) : (
                     <Link
-                        href="/login"
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                      href="/login"
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
-                        로그인
+                      로그인
                     </Link>
-                )}
+                  )}
+                </div>
+              </div>
             </div>
             <main className="max-w-4xl mx-auto px-4 py-8">
-                {/* 상단 네비게이션은 layout.tsx에 분리해두는 것을 권장 */}
-
                 <div className="mb-6 flex gap-4 border-b pb-2">
                     <Link href="/category/js" className="text-blue-600 hover:underline">
                         JavaScript

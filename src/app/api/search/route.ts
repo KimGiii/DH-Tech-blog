@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
     const posts = await prisma.$queryRaw`
         SELECT
-            p.id, p.title, p.content, p.category, p.createdAt, u.nickname as author
+            p.id, p.title, p.content, p.category, p.createdAt, u.name as author
         FROM
             post p
         JOIN

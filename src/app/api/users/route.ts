@@ -5,11 +5,11 @@ const prisma = new PrismaClient();
 
 export async function GET() {
     try {
-        const users = await prisma.localUser.findMany({
+        const users = await prisma.user.findMany({
             select: {
                 id: true,
                 email: true,
-                nickname: true,
+                name: true,
                 createdAt: true,
             },
             orderBy: {

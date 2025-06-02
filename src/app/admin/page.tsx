@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 export default function AdminPage() {
   const [emailQuery, setEmailQuery] = useState("");
-  const [nicknameQuery, setNicknameQuery] = useState("");
+  const [nameQuery, setNameQuery] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
@@ -61,7 +61,7 @@ export default function AdminPage() {
               <ul className="list-disc pl-5 mt-2">
                   {posts.map((post, index) => (
                       <li key={post.id || index}>
-                          {String(post.title)} ({String(post.author?.nickname)}) - 작성일: {new Date(post.createdAt).toLocaleDateString()}
+                          {String(post.title)} ({String(post.author?.name)}) - 작성일: {new Date(post.createdAt).toLocaleDateString()}
                       </li>
                   ))}
               </ul>
@@ -83,8 +83,8 @@ export default function AdminPage() {
           <input
             type="text"
             placeholder="닉네임으로 검색"
-            value={nicknameQuery}
-            onChange={(e) => setNicknameQuery(e.target.value)}
+            value={nameQuery}
+            onChange={(e) => setNameQuery(e.target.value)}
             className="border px-4 py-2 rounded"
           />
         </div>
@@ -96,7 +96,7 @@ export default function AdminPage() {
             <ul className="list-disc pl-5 mt-2">
               {users.map((user) => (
                 <li key={user.id}>
-                  {String(user.email)} ({String(user.nickname)}) - 가입일: {new Date(user.createdAt).toLocaleDateString()}
+                  {String(user.email)} ({String(user.name)}) - 가입일: {new Date(user.createdAt).toLocaleDateString()}
                 </li>
               ))}
             </ul>

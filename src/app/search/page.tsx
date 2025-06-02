@@ -30,11 +30,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   // authorId로 닉네임 조회
   const authorIds = Array.from(new Set(posts.map((p) => p.authorId)));
-  const authors = await prisma.localUser.findMany({
+  const authors = await prisma.user.findMany({
     where: { id: { in: authorIds } },
-    select: { id: true, nickname: true },
+    select: { id: true, name: true },
   });
-  const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.nickname]));
+  const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.name]));
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">

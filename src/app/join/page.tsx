@@ -5,7 +5,7 @@ import {useState} from "react";
 export default function SignupPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [nickname, setNickName] = useState("");
+    const [name, setName] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleSignup = async () => {
@@ -17,7 +17,7 @@ export default function SignupPage() {
         const res = await fetch("/api/user/join", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({email, password, nickname}),
+            body: JSON.stringify({email, password, name}),
         });
 
         if (res.ok) {
@@ -36,8 +36,8 @@ export default function SignupPage() {
                     <input
                         type="text"
                         placeholder="닉네임"
-                        value={nickname}
-                        onChange={(e) => setNickName(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         className="w-full border border-gray-600 bg-gray-800 text-white rounded px-3 py-2"
                         required
                     />
