@@ -2,13 +2,47 @@
 
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+
+interface Post {
+  id: number;
+  title: string;
+  author: { nickname: string };
+  createdAt: string;
+}
 
 export default function HomePage() {
     const { data: session } = useSession();
     const router = useRouter();
     const [search, setSearch] = useState("");
+    const [latestPosts, setLatestPosts] = useState<Record<string, Post | null>>({
+      js: null,
+      ts: null,
+      react: null,
+      etc: null,
+    });
+
+    useEffect(() => {
+      const fetchLatestPosts = async () => {
+        const slugs = ['javascript', 'typescript', 'react', 'etc'];
+        const latest: Record<string, Post | null> = {
+          js: null,
+          ts: null,
+          react: null,
+          etc: null,
+        };
+        for (const slug of slugs) {
+          const res = await fetch(`/api/post?category=${slug.toUpperCase()}`);
+          const posts: Post[] = await res.json();
+          if (posts.length > 0) {
+            latest[slug] = posts[0];
+          }
+        }
+        setLatestPosts(latest);
+      };
+      fetchLatestPosts();
+    }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,6 +51,14 @@ export default function HomePage() {
         }
     };
     console.log("session", session);
+
+    const categories = [
+      { name: "JavaScript", slug: "javascript" },
+      { name: "TypeScript", slug: "typescript" },
+      { name: "React", slug: "react" },
+      { name: "Etc", slug: "etc" },
+    ];
+
     return (
             <main className="max-w-4xl mx-auto px-4 py-8">
                 <div className="mb-6 flex gap-4 border-b pb-2">
@@ -51,37 +93,24 @@ export default function HomePage() {
                 <h1 className="text-2xl font-bold mb-6">📢 최신 기술 글</h1>
 
                 <div className="space-y-10">
-                  <section>
-                    <h2 className="text-xl font-semibold text-blue-600 mb-2">JavaScript</h2>
-                    <Link href="/posts/1" className="block hover:underline">
-                      <div className="text-lg font-medium">자바스크립트 비동기 처리 완전 정복</div>
-                      <p className="text-sm text-gray-500">by 홍길동 · 2024.05.30</p>
-                    </Link>
-                  </section>
-
-                  <section>
-                    <h2 className="text-xl font-semibold text-blue-600 mb-2">TypeScript</h2>
-                    <Link href="/posts/2" className="block hover:underline">
-                      <div className="text-lg font-medium">타입스크립트 유틸리티 타입 완전 정복</div>
-                      <p className="text-sm text-gray-500">by 김개발 · 2024.05.29</p>
-                    </Link>
-                  </section>
-
-                  <section>
-                    <h2 className="text-xl font-semibold text-blue-600 mb-2">React</h2>
-                    <Link href="/posts/3" className="block hover:underline">
-                      <div className="text-lg font-medium">React Server Components 이해하기</div>
-                      <p className="text-sm text-gray-500">by 리액터 · 2024.05.28</p>
-                    </Link>
-                  </section>
-
-                  <section>
-                    <h2 className="text-xl font-semibold text-blue-600 mb-2">Etc</h2>
-                    <Link href="/posts/4" className="block hover:underline">
-                      <div className="text-lg font-medium">개발자를 위한 Git 꿀팁</div>
-                      <p className="text-sm text-gray-500">by 도구왕 · 2024.05.27</p>
-                    </Link>
-                  </section>
+                  {categories.map(({ name, slug }) => {
+                    const post = latestPosts[slug];
+                    return (
+                      <section key={slug}>
+                        <h2 className="text-xl font-semibold text-blue-600 mb-2">{name}</h2>
+                        {post ? (
+                          <Link href={`/category/${slug}/${post.id}`} className="block hover:underline">
+                            <div className="text-lg font-medium">{post.title}</div>
+                            <p className="text-sm text-gray-500">
+                              by {post.author.nickname} · {new Date(post.createdAt).toLocaleDateString()}
+                            </p>
+                          </Link>
+                        ) : (
+                          <p className="text-sm text-gray-500">게시글 없음</p>
+                        )}
+                      </section>
+                    );
+                  })}
                 </div>
             </main>
     );

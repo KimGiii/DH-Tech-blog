@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LikeDislikeButtons from "@/components/LikeDislikeButtons";
 
 interface Post {
     id: number;
@@ -10,6 +11,8 @@ interface Post {
     };
     createdAt: string;
     updatedAt?: string;
+    likeCount?: number;
+    dislikeCount?: number;
 }
 
 async function getPostById(id: string): Promise<Post> {
@@ -47,6 +50,7 @@ export default async function PostDetailPage({ params }: Props) {
                 <div className="mt-4">
                     <p>{post.content}</p>
                 </div>
+                <LikeDislikeButtons postId={post.id} initialLikes={post.likeCount || 0} initialDislikes={ post.dislikeCount || 0} />
             </article>
             <div className="mt-8">
                 <Link href="/category/js" className="text-blue-600 hover:underline">
