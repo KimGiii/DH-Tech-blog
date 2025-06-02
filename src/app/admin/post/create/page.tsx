@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 export default function CreatePostPage() {
     const router = useRouter();
     const [title, setTitle] = useState("");
-    const [authorId] = useState(1); // example user ID
+    const [authorId] = useState("cmbf8270r00000d3usk5elusx");
     const [content, setContent] = useState("");
     const [category, setCategory] = useState("");
     const [loading, setLoading] = useState(false);

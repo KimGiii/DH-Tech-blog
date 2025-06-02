@@ -19,7 +19,7 @@ export default async function JavaScriptCategoryPage() {
             <ul className="space-y-6">
                 {posts.map((post: any) => (
                     <li key={post.id} className="border-b pb-4">
-                        <Link href={`/posts/${post.id}`}>
+                        <Link href={`/category/js/${post.id}`}>
                             <div className="text-xl font-semibold hover:underline">{post.title}</div>
                             <p className="text-sm text-gray-500 mt-1">
                                 by <span className="font-medium">{post.author?.nickname || "Unknown"}</span> ·{" "}
