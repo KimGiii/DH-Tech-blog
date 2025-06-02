@@ -1,21 +1,40 @@
 "use client"
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
+import {useRouter} from "next/navigation";
+import {useState} from "react";
 
 export default function HomePage() {
     const { data: session } = useSession();
+    const router = useRouter();
+    const [search, setSearch] = useState("");
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (search.trim()) {
+            router.push(`/search?query=${encodeURIComponent(search)}`);
+        }
+    };
 
     return (
         <>
-            <div className="w-full flex justify-end px-4 pt-4">
+            <div className="w-full flex justify-end px-4 pt-4 gap-2">
                 {session?.user ? (
-                    <Link
-                        href="/me"
-                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                    >
-                        내 정보 보기
-                    </Link>
+                    <>
+                        <Link
+                            href="/me"
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                        >
+                            내 정보 보기
+                        </Link>
+                        <button
+                            onClick={() => signOut()}
+                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
+                        >
+                            로그아웃
+                        </button>
+                    </>
                 ) : (
                     <Link
                         href="/login"
@@ -41,6 +60,21 @@ export default function HomePage() {
                     <Link href="/category/etc" className="text-blue-600 hover:underline">
                         Etc
                     </Link>
+                    <form onSubmit={handleSearch} className="flex items-center ml-auto gap-2">
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="검색어 입력"
+                            className="border rounded px-2 py-1"
+                        />
+                        <button
+                            type="submit"
+                            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+                        >
+                            검색
+                        </button>
+                    </form>
                 </div>
                 <h1 className="text-2xl font-bold mb-6">📢 최신 기술 글</h1>
 

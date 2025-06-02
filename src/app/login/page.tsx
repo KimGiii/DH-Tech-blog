@@ -56,7 +56,7 @@ export default function LoginPage() {
                         로그인
                     </button>
                     <button
-                        type="button"
+                        type="submit"
                         onClick={() => signIn("github")}
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-2"
                     >
