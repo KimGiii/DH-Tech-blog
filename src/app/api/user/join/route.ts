@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma.localUser.findUnique({
             where: { email },
         });
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await prisma.user.create({
+        const newUser = await prisma.localUser.create({
             data: {
                 email,
                 password: hashedPassword,

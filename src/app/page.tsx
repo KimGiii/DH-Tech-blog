@@ -20,7 +20,7 @@ export default function HomePage() {
     return (
         <>
             <div className="w-full flex justify-end px-4 pt-4 gap-2">
-                {session?.user ? (
+                {session ? (
                     <>
                         <Link
                             href="/me"

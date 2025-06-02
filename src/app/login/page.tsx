@@ -11,7 +11,7 @@ export default function LoginPage() {
         e.preventDefault();
         console.log("Logging in with:", {email, password});
         // Mock role-based navigation logic
-        if (email === "admin@example.com") {
+        if (email === "admin@nomail.com") {
             window.location.href = "/admin"; // 관리자 페이지
         } else {
             window.location.href = "/"; // 일반 사용자 메인 페이지
@@ -56,8 +56,8 @@ export default function LoginPage() {
                         로그인
                     </button>
                     <button
-                        type="submit"
-                        onClick={() => signIn("github")}
+                        type="button"
+                        onClick={() => signIn("github", { callbackUrl: "/" })}
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-2"
                     >
                         GitHub 로그인
