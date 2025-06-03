@@ -59,7 +59,7 @@ export default async function PostDetailPage({params}: Props) {
                 <div className="mt-4">
                     <p>{post.content}</p>
                 </div>
-                <LikeDislikeButtons postId={post.id} />
+                <LikeDislikeButtons postId={post.id} initialLikeCount={0} initialDislikeCount={0} />
             </article>
             <div className="mt-8">
                 <Link href={`/category/${categorySlug}`} className="text-blue-600 hover:underline">

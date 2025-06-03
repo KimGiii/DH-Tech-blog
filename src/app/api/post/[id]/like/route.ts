@@ -1,25 +1,34 @@
 // app/api/post/[id]/like/route.ts
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/generated/prisma"; // prisma 클라이언트 경로를 프로젝트에 맞게 수정하세요
 
-const prisma = new PrismaClient();
+export async function POST(
+    req: Request,
+    context: { params: Promise<{ id: string }> }
+) {
+    // params를 await해서 id 값을 가져옵니다
+    const { id: idStr } = await context.params;
+    const postId = Number(idStr);
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
-    const postId = Number(params.id);
-    if (Number.isNaN(postId)) {
-        return NextResponse.json({ error: "유효하지 않은 게시글 ID입니다." }, { status: 400 });
+    if (isNaN(postId)) {
+        return NextResponse.json(
+            { error: "잘못된 게시글 ID입니다." },
+            { status: 400 }
+        );
     }
 
     try {
-        // 현재 카운트를 1 증가시키고, 업데이트된 값을 반환
+        // likeCount를 1 증가시킵니다
         const updated = await prisma.post.update({
             where: { id: postId },
             data: { likeCount: { increment: 1 } },
-            select: { likeCount: true, dislikeCount: true },
         });
-        return NextResponse.json({ success: true, data: updated });
+        return NextResponse.json({ likeCount: updated.likeCount });
     } catch (error) {
-        console.error("좋아요 처리 중 오류:", error);
-        return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+        console.error("좋아요 업데이트 실패:", error);
+        return NextResponse.json(
+            { error: "좋아요 업데이트 중 오류가 발생했습니다." },
+            { status: 500 }
+        );
     }
 }
