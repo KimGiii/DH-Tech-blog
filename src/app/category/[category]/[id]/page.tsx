@@ -25,15 +25,14 @@ async function getPostById(id: string): Promise<Post> {
     return res.json();
 }
 
-interface Props {
-    params: {
-        id: string;
-    };
+interface ContextParams {
+    params: Promise<{ id: string }>;
 }
 
-export default async function PostDetailPage({params}: Props) {
-    const id = decodeURIComponent(params.id);
-    const post = await getPostById(id);
+export default async function PostDetailPage(context: ContextParams) {
+    const { id } = await context.params;
+    const decodedId = decodeURIComponent(id);
+    const post = await getPostById(decodedId);
 
     const rawCategory = post.category.toLowerCase();
     const categorySlug =
@@ -59,7 +58,11 @@ export default async function PostDetailPage({params}: Props) {
                 <div className="mt-4">
                     <p>{post.content}</p>
                 </div>
-                <LikeDislikeButtons postId={post.id} initialLikeCount={0} initialDislikeCount={0} />
+                <LikeDislikeButtons
+                  postId={post.id}
+                  initialLikeCount={post.likeCount ?? 0}
+                  initialDislikeCount={post.dislikeCount ?? 0}
+                />
             </article>
             <div className="mt-8">
                 <Link href={`/category/${categorySlug}`} className="text-blue-600 hover:underline">
