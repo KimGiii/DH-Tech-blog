@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/prismaClient";
 
-// GET all posts (with optional search)
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
@@ -59,7 +58,7 @@ export async function POST(req: NextRequest) {
             data: {
                 title,
                 content,
-                category,
+                category: category.toUpperCase(),
                 author: {
                     connect: { id: String(authorId) },
                 },

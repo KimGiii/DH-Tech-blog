@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 프로젝트 README
 
-## Getting Started
+## 1. 프로젝트 소개
+이 프로젝트는 Next.js, Prisma, MySQL을 기반으로 한 블로그/커뮤니티 서비스입니다.  
+사용자는 회원가입 및 로그인을 통해 게시글을 작성·수정·삭제하고, 카테고리별로 게시글을 탐색하거나 검색 기능을 활용할 수 있습니다.  
+또한, 게시글마다 좋아요·싫어요 기능이 구현되어 있으며, 메인 페이지에서는 각 카테고리의 최신 게시글을 탭 형태로 확인할 수 있습니다.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 2. 사용 기술 스택
+- **프레임워크**: Next.js (App Router)
+- **ORM**: Prisma
+- **데이터베이스**: MySQL
+- **인증/인가**: NextAuth.js + PrismaAdapter, bcrypt
+- **프론트엔드**: React, TypeScript
+- **스타일링**: Tailwind CSS
+- **아이콘/이미지**: Next.js `Image`, SVG 아이콘(전화, 시계, 위치 등)
+- **배포 환경**: Vercel (로컬 개발 환경: Node.js, npm/yarn)
+- **기타**: Full-Text Search 인덱스, 커스텀 API 라우트
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 3. 설치 및 실행 방법
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **리포지토리 클론**
+   ```bash
+   git clone <프로젝트_레포_URL>
+   cd <프로젝트_폴더>
+   
+2. **의존성 설치**
+   ```bash
+   yarn install
+   
+## 4. 주요 기능
 
-## Learn More
+1. 회원가입 & 로그인 & 인증
+   •	NextAuth.js + PrismaAdapter를 사용하여 인증 로직 구현
+   •	bcrypt를 이용한 비밀번호 해시 처리
+   •	회원가입(POST /api/signup) 시:
+      1.	클라이언트에서 email, password, name을 전달
+      2.	서버에서 bcrypt.hash로 비밀번호 암호화 후 User 테이블에 저장
 
-To learn more about Next.js, take a look at the following resources:
+   •  로그인 시:
+      •	NextAuth.js Provider(Credentials)를 커스터마이징하여, 입력한 이메일과 비밀번호를 검증
+      •	인증된 사용자는 헤더 상단 우측에 사용자 정보(이름)와 로그아웃 버튼이 표시됨.
+      •	로그아웃하면 인증 상태 초기화 후 메인 페이지로 리다이렉트.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. 권한 분기 (Authorization)
+•	ADMIN 계정과 USER 계정 구분
+•	관리자는 관리자 페이지(/admin)에 접근 가능
+•	일반 사용자는 메인 페이지로 리다이렉트
+•	로그인 후 useSession()을 통해 세션을 확인하고, role에 따라 접근 페이지를 제어
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. 게시글 
+      1. 생성(Create)
+         •	페이지 경로: 사용자 입력을 받는 별도 페이지(/create-post)가 있고, 거기서 제목·내용·카테고리·작성자 ID를 입력받습니다.
+         •	API 호출: 해당 페이지에서 “POST /api/post” 엔드포인트로 JSON 형태의 { title, content, category, authorId } 요청을 보내면, 서버에서는 Prisma를 사용해 새로운 Post 레코드를 데이터베이스에 생성합니다.
+         •	처리 후 동작: 생성이 완료되면 메인 목록 페이지(또는 원하는 다른 페이지)로 자동 이동합니다.
 
-## Deploy on Vercel
+      
+      2. 목록 조회(Read All)
+         •	메인 페이지(“/”)
+         •	서버 또는 클라이언트에서 전체 게시글을 최신순(등록일 기준 내림차순)으로 조회하여 보여줍니다.
+         •	예시로, 페이지가 렌더링될 때 Prisma를 통해 모든 게시글을 불러오고, 프론트엔드에서는 제목과 간략한 내용을 카드나 리스트 형태로 표시합니다.
+         •	카테고리별 목록(“/category/[category]”)
+         •	URL 경로에 포함된 카테고리 이름을 기반으로, 해당 카테고리에 속한 게시글만 별도로 조회합니다.
+         •	프론트엔드에서는 서버에서 받은 데이터(카테고리 필터가 적용된 게시글 목록)를 받아서 클라이언트 컴포넌트가 렌더링합니다.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+      
+      3. 상세 조회(Read One)
+         •	페이지 경로: /category/[category]/[id] 와 같은 동적 라우트를 사용합니다.
+         •	API 호출: “GET /api/post/[id]” 엔드포인트에 게시글 ID를 전달하면, 서버는 Prisma를 통해 해당 ID의 게시글 한 건을 조회합니다.
+         •	동적 라우트 처리: 페이지 컴포넌트는 전달받은 URL 파라미터(ID)를 비동기로(await) 처리한 후, getPostById(params.id) 같은 함수를 호출해 데이터를 가져옵니다.
+         •	렌더링: 제목·작성자·등록일·내용 등 게시글 상세 정보를 화면에 표시하고, 필요하다면 댓글이나 좋아요 기능 같은 부가 요소를 함께 보여줄 수 있습니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+      
+      4. 수정(Update)
+         •	페이지 경로: /category/[category]/[id]/edit 와 같은 동적 라우트에서, 기존 게시글의 제목·내용·카테고리를 편집할 수 있는 폼을 제공합니다.
+         •	API 호출: 폼에서 변경된 { title, content, category } 데이터를 “PUT /api/post/[id]” 엔드포인트로 전송하면, 서버는 Prisma를 사용해 해당 ID의 게시글을 업데이트합니다.
+         •	처리 후 동작: 수정이 성공하면 다시 상세 페이지나 목록 페이지로 리다이렉트하여 바뀐 내용을 바로 확인할 수 있도록 합니다.
+      
+
+      5. 삭제(Delete)
+         •	삭제 버튼 위치: 게시글 목록 화면의 각 아이템 오른쪽 하단(또는 원하는 위치)에 “삭제하기” 버튼을 배치합니다.
+         •	API 호출: 버튼 클릭 시 “DELETE /api/post/[id]” 엔드포인트로 요청을 보내면, 서버에서 Prisma를 통해 해당 ID의 게시글을 삭제합니다.
+         •	처리 후 동작: 삭제가 완료되면 목록 페이지로 리다이렉트하거나 상태를 갱신하여 리스트에서 해당 게시글이 사라지도록 합니다.
+
+
+4. 카테고리별 기능
+•	카테고리 정의: enum Category { JAVASCRIPT, TYPESCRIPT, REACT, ETC }
+•	메인 페이지 상단에 네 개 탭(JavaScript, TypeScript, React, Etc) 배치
+•	각 탭을 클릭하면 게시글이 최신순으로 정렬되어있음
+
+5. 게시글 좋아요/싫어요 기능
+•	상세 페이지(PostDetailPage) 상단에 좋아요/싫어요 버튼 및 카운트 표시
+•	버튼 클릭 시 fetch로 API 호출, 상태에 따라 바로 카운트 업데이트
+•	로그인하지 않은 사용자는 버튼 클릭 시 로그인 페이지로 리다이렉트
+
+5.6. 검색 기능 (Full-Text Search)
+•	메인 헤더에 검색 입력창 배치
+•	검색어 입력 후 엔터 시 /search?page=1&query=키워드로 이동
+•	SearchPage 컴포넌트에서 API 호출 후 결과 리스트 렌더링

@@ -1,40 +1,71 @@
-import { NextRequest, NextResponse } from "next/server";
+// src/app/api/post/[id]/route.ts
+
+import { NextResponse } from "next/server";
 import { prisma } from "@/utils/prismaClient";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+// GET /api/post/[id]
+export async function GET(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
     const id = params.id;
     const numericId = Number(id);
     if (Number.isNaN(numericId)) {
-        return NextResponse.json(
-            { message: "유효하지 않은 ID입니다." },
-            { status: 400 }
-        );
+        return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
 
     try {
-        // id로 한 건만 조회
         const post = await prisma.post.findUnique({
             where: { id: numericId },
-            include: {
-                author: {
-                    select: { name: true },
-                },
-            },
+            include: { author: { select: { id: true, name: true } } },
         });
-
         if (!post) {
-            return NextResponse.json(
-                { message: `게시글(id: ${numericId})이 존재하지 않습니다.` },
-                { status: 404 }
-            );
+            return NextResponse.json({ message: "Post not found" }, { status: 404 });
         }
-
         return NextResponse.json(post);
     } catch (error) {
-        console.error(error);
-        return NextResponse.json(
-            { message: "게시글을 불러오는 중 서버 오류가 발생했습니다." },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: "Error fetching post" }, { status: 500 });
+    }
+}
+
+// PUT /api/post/[id]
+export async function PUT(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    const id = params.id;
+    const numericId = Number(id);
+    if (Number.isNaN(numericId)) {
+        return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+    }
+
+    const { title, content, category } = await request.json();
+    try {
+        const updated = await prisma.post.update({
+            where: { id: numericId },
+            data: { title, content, category },
+        });
+        return NextResponse.json(updated);
+    } catch (error) {
+        return NextResponse.json({ message: "Error updating post" }, { status: 500 });
+    }
+}
+
+// DELETE /api/post/[id]
+export async function DELETE(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    const id = params.id;
+    const numericId = Number(id);
+    if (Number.isNaN(numericId)) {
+        return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+    }
+
+    try {
+        await prisma.post.delete({ where: { id: numericId } });
+        return NextResponse.json({ message: "Post deleted" });
+    } catch (error) {
+        return NextResponse.json({ message: "Error deleting post" }, { status: 500 });
     }
 }

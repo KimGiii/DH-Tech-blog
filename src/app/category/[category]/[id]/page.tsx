@@ -17,7 +17,7 @@ interface Post {
 
 async function getPostById(id: string): Promise<Post> {
     const res = await fetch(`http://localhost:3000/api/post/${id}`, {
-        next: { revalidate: 60 },
+        next: {revalidate: 60},
     });
     if (!res.ok) {
         throw new Error("게시글을 불러오는 데 실패했습니다");
@@ -31,15 +31,24 @@ interface Props {
     };
 }
 
-export default async function PostDetailPage({ params }: Props) {
-    const post = await getPostById(params.id);
+export default async function PostDetailPage({params}: Props) {
+    const id = decodeURIComponent(params.id);
+    const post = await getPostById(id);
+
+    const rawCategory = post.category.toLowerCase();
+    const categorySlug =
+      rawCategory === "javascript"
+        ? "js"
+        : rawCategory === "typescript"
+        ? "ts"
+        : rawCategory;
 
     return (
         <main className="max-w-2xl mx-auto px-4 py-8">
             <article className="prose mx-auto">
                 <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
                 <p className="text-sm text-gray-500 mb-6">
-                    by <span className="font-medium">{post.author?.nickname || "Unknown"}</span> ·{" "}
+                    by <span className="font-medium">{post.author?.name || "Unknown"}</span> ·{" "}
                     {new Date(post.createdAt).toLocaleDateString()}
                 </p>
                 <div className="mb-6">
@@ -50,10 +59,10 @@ export default async function PostDetailPage({ params }: Props) {
                 <div className="mt-4">
                     <p>{post.content}</p>
                 </div>
-                <LikeDislikeButtons postId={post.id} initialLikes={post.likeCount || 0} initialDislikes={ post.dislikeCount || 0} />
+                <LikeDislikeButtons postId={post.id} />
             </article>
             <div className="mt-8">
-                <Link href="/category/js" className="text-blue-600 hover:underline">
+                <Link href={`/category/${categorySlug}`} className="text-blue-600 hover:underline">
                     ← 뒤로 가기
                 </Link>
             </div>
