@@ -36,16 +36,23 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   });
   const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.name]));
 
+  const slugMap: Record<string, string> = {
+    JAVASCRIPT: "js",
+    TYPESCRIPT: "ts",
+    REACT: "react",
+    ETC: "etc",
+  };
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">🔍 "{query}" 검색 결과</h1>
+      <h1 className="text-2xl font-bold mb-6">🔍 &#34;{query}&#34; 검색 결과</h1>
       {posts.length === 0 ? (
         <p className="text-gray-500">검색 결과가 없습니다.</p>
       ) : (
         <ul className="space-y-6">
           {posts.map((post) => (
             <li key={post.id} className="border-b pb-4">
-              <Link href={`/posts/${post.id}`}>
+              <Link href={`/category/${slugMap[post.category]}/${post.id}`}>
                 <div className="text-xl font-semibold hover:underline">{post.title}</div>
                 <p className="text-sm text-gray-500 mt-1">
                   by <span className="font-medium">{authorMap[post.authorId] || "익명"}</span> · {new Date(post.createdAt).toLocaleDateString("ko-KR")}
